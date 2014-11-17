@@ -34,8 +34,6 @@ def get_messages(date, person):
 
 if __name__ == "__main__":  # Needs output formatting
     args = parse_args()
-    print(args)
-    print(args.name)
     if validate_date(args.date):
         messages = get_messages(args.date, args.name)
         for msg in messages:
