@@ -23,7 +23,7 @@ def validate_date(date_str):
 
 
 def get_messages(date, person):
-    db = sqlite3.connect('Database\\main.db')  # this needs os.path or smth smarter the future
+    db = sqlite3.connect('Database\\main.db')  # TODO: this needs os.path or smth smarter the future
     c = db.cursor()
     start_date = date + ' 00:00:00'
     end_date = date + ' 24:59:99'
@@ -32,7 +32,7 @@ def get_messages(date, person):
     return msgs
 
 
-if __name__ == "__main__":  # Needs output formatting
+if __name__ == "__main__":  # TODO: Needs output formatting
     args = parse_args()
     if validate_date(args.date):
         messages = get_messages(args.date, args.name)
