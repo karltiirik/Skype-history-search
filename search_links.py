@@ -1,16 +1,19 @@
 __author__ = 'Karl Tiirik'
 
 import sqlite3
+import os
 import urllib.request as urllib
 
 from bs4 import BeautifulSoup
 
 
-def get_all_messages():
-    db = sqlite3.connect('Database\\main.db')  # TODO: this needs os.path or smth smarter the future
-    c = db.cursor()
-    c.execute('SELECT from_dispname, body_xml,  DATETIME(timestamp, "unixepoch", "localtime") FROM messages')
-    msgs = c.fetchall()
+def get_all_messages_w_links():
+    with sqlite3.connect(os.path.join('Database', 'main.db')) as db:
+        c = db.cursor()
+        c.execute(
+            'SELECT from_dispname, body_xml,  DATETIME(timestamp, "unixepoch", "localtime") '
+            'FROM messages WHERE body_xml LIKE "%a href%"')
+        msgs = c.fetchall()
     return msgs
 
 
@@ -19,15 +22,14 @@ def find_links(msgs):
     for m in msgs:
         soup = BeautifulSoup(str(m[1]))
         link = soup.findAll('a')
-        if link:
-            for i in range(len(link)):
-                url = (link[i].get('href'))
-                msgs_w_links.append([m[0], url, m[2]])
+        for i in range(len(link)):
+            url = (link[i].get('href'))
+            msgs_w_links.append([m[0], url, m[2]])
     return msgs_w_links
 
 
 def create_report(msgs):
-    # TODO: Refactored using some python package
+    # TODO: Refactor HTML creation
     html = """<!DOCTYPE html>
     <html>
     <head>
@@ -37,7 +39,7 @@ def create_report(msgs):
     <body>
     <h1>Skype link history</h1>
     """
-    html += """<table align="left" border="0" cellpadding="5" cellspacing="5">
+    html += """<table align="left" border="1" cellpadding="5" cellspacing="5">
     <thead>
         <tr>
             <th scope="col">Person</th>
@@ -71,6 +73,6 @@ def get_title(url):
 
 
 if __name__ == "__main__":
-    msg = get_all_messages()
+    msg = get_all_messages_w_links()
     msg = find_links(msg)
     create_report(msg)
