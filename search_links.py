@@ -29,38 +29,41 @@ def find_links(msgs):
 
 
 def create_report(msgs):
-    # TODO: Refactor HTML creation
-    html = """<!DOCTYPE html>
-    <html>
-    <head>
-    <title>Skype link history</title>
-    <meta charset="utf-8">
-    </head>
-    <body>
-    <h1>Skype link history</h1>
-    """
-    html += """<table align="left" border="1" cellpadding="5" cellspacing="5">
-    <thead>
-        <tr>
-            <th scope="col">Person</th>
-            <th scope="col">URL</th>
-            <th scope="col">Date</th>
-        </tr>
-    </thead>
-    <tbody>
-    """
-    for m in msgs:
-        html += """<tr>"""
-        html += '<td>' + m[0] + '</td>'
-        page_title = get_title(m[1])
-        html += '<td>' + '<a href="' + m[1] + '">' + page_title + '</a>''</td>'
-        html += '<td>' + m[2] + '</td>'
-        html += '</tr>'
-    html += """</tbody>
-    </table>
-    </body>
-    </html>"""
     with open('report.html', 'w', encoding="utf8") as report:
+        html = """<!DOCTYPE html>
+        <html>
+        <head>
+            <title>Skype link history</title>
+            <meta charset="utf-8">
+        </head>
+        <body>
+            <h1>Skype link history</h1>
+            <table align="left" border="1" cellpadding="5" cellspacing="5">
+            <thead>
+                <tr>
+                    <th scope="col">Person</th>
+                    <th scope="col">URL</th>
+                    <th scope="col">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+        """
+        report.write(html)
+        for m in msgs:
+            row = '''
+             <tr>
+                <td>%s</td>
+                <td><a href="%s">%s</a></td>
+                <td>%s</td>
+            </tr>'''
+            page_title = get_title(m[1])
+            report.write(row %(m[0], m[1], page_title, m[2]))
+
+        html = """
+        </tbody>
+        </table>
+        </body>
+        </html>"""
         report.write(html)
 
 
